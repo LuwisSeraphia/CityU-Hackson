@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f7f7f5" />
+    <meta name="description" content="知乎知识星球：Three.js 交互式 Agent 办公室。" />
+    <title>知乎 · 知识星球办公室</title>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside id="sidebar" class="sidebar"></aside>
+      <main class="workspace">
+        <header class="workspace-heading">
+          <div class="workspace-eyebrow"><span class="connection-dot"></span> YOUR AGENTS, AT WORK</div>
+          <h1>知乎办公室</h1>
+          <p>从办公室找到伙伴，直接交代要做的事。</p>
+          <span class="workspace-demo">交互体验 <span>DEMO</span></span>
+        </header>
+        <section class="office-stage" aria-label="交互式办公室">
+          <div class="stage-topline"><span><i></i> 3 位伙伴已就绪</span><span>2.5D WORKSPACE</span></div>
+          <div id="scene-container" class="scene-container">
+            <div id="agent-labels" class="agent-labels"></div>
+            <div id="scene-loading" class="scene-loading">正在布置办公室…</div>
+          </div>
+          <section id="agent-panel" class="agent-panel" aria-label="Agent 对话与状态" hidden></section>
+          <div class="stage-help"><span class="mouse-icon">⌖</span> 点击伙伴，开始交代任务 <span class="help-separator">·</span> 左键旋转 · 右键平移 · 滚轮缩放</div>
+        </section>
+        <footer class="workspace-footer">
+          <div class="scene-controls">
+            <button id="toggle-animation" aria-pressed="false">Ⅱ <span>暂停动画</span></button>
+            <span class="control-divider"></span>
+            <label>动画速度 <select id="animation-speed" aria-label="动画速度"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="1.5">1.5×</option><option value="2">2×</option></select></label>
+            <button id="reset-camera" title="重置视角与动画设置" aria-label="重置视角与动画设置">↺</button>
+          </div>
+          <span class="footer-caption">知乎 · 知识星球</span>
+        </footer>
+      </main>
+      <aside id="status-panel" class="status-panel" aria-label="演示状态统计"></aside>
+    </div>
+    <div id="toast" class="toast" role="status"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
