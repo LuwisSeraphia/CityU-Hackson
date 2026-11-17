@@ -1,0 +1,2 @@
+# Archived originals must retain their original line endings and bytes.
+docs/archive/*.original.md -text

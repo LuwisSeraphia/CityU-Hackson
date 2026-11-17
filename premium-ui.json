@@ -1,0 +1,23 @@
+{
+  "profile": "product-admin",
+  "sourceRoots": ["apps/web/src"],
+  "locale": "zh-CN",
+  "canonicalMap": "DESIGN.md",
+  "requiredCapabilities": ["Form", "Scrollbar", "CRUD"],
+  "requiredCommands": ["unit", "e2e", "types", "lint", "build", "tokens"],
+  "commands": {
+    "unit": "npm test",
+    "e2e": "npm run test:e2e",
+    "types": "npm run typecheck",
+    "lint": "npm run lint",
+    "build": "npm run build",
+    "tokens": "npm run tokens:check"
+  },
+  "evidence": {
+    "failurePaths": "apps/web/tests/e2e/workbench.spec.ts",
+    "memoryWorkflow": "apps/web/tests/unit/gateway.test.ts"
+  },
+  "ownership": {
+    "Select/Listbox": "native"
+  }
+}

@@ -1,0 +1,12 @@
+flowchart TD
+  A[任一阶段报错：trace_id + stage + code] --> B{失败位置}
+  B -->|提取与校验| EX[只重试 Extractor，不提交无证据候选]
+  B -->|事实事务| DB[回滚事务；源与任务显示失败]
+  B -->|向量阶段| IDX[保留已提交事实；只重试 Embedding]
+  B -->|Rerank| RRF[退回 RRF+规则并标注 PARTIAL]
+  B -->|权限/DB读取| STOP[拒绝请求或报告 UNAVAILABLE]
+  EX --> REG[保存脱敏故障样本与单模块回归]
+  DB --> REG
+  IDX --> REG
+  RRF --> REG
+  STOP --> REG

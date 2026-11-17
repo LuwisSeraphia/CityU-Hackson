@@ -1,0 +1,14 @@
+flowchart TD
+  A[用户显式选择记录模式并提交] --> B{认证 / 参数 / 幂等校验}
+  B -->|通过| C[事务创建 Source + Job；返回 202]
+  C --> D[Extractor 生成 Episode / Fact 候选]
+  D --> E{Schema / 证据 / 时间校验}
+  E -->|失败| ERR[任务标记失败，保留 trace_id，可安全重试]
+  E -->|通过| F[Resolver 对比已有记忆]
+  F --> G{Policy / 变更风险}
+  G -->|普通新增| H[Controller 事务提交事实和 Outbox]
+  G -->|重要变更或冲突| P[Proposal PENDING_REVIEW 等待用户]
+  H --> I[后台 Worker 生成双轨 Embedding]
+  I --> J[索引状态 READY / FAILED]
+  P --> K[前端变更卡片]
+  J --> L[前端记忆回执]

@@ -1,0 +1,11 @@
+flowchart TD
+  UI[单一 Memory Chat 窗口：记录 / 提问] --> API[FastAPI：Auth / API / SSE / Trace]
+  API --> W[写入引擎：Extractor → Resolver → Controller]
+  API --> R[检索引擎：Plan → Dual Retrieval → RRF → Rerank]
+  W --> DB[(PostgreSQL + pgvector：Source / Episode / Fact / Version)]
+  R --> DB
+  DB --> O[Outbox / Worker]
+  O --> EMB[Embedding API]
+  W --> Q[Qwen Flash]
+  R --> QR[Qwen Rerank / Plus]
+  EMB --> DB
