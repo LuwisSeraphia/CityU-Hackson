@@ -1,0 +1,17 @@
+flowchart TD
+  A[用户显式选择提问模式] --> AUTH[可信 RequestContext / 所有权约束]
+  AUTH --> Q[Query Analyzer / Retrieval Plan]
+  Q --> FV[Fact 向量与关键词]
+  Q --> EV[Episode 向量与关键词]
+  FV --> F[RRF / 候选融合]
+  EV --> F
+  F --> G[Evidence Grouper：来源去重]
+  G --> T[Temporal Validator：当前/历史/计划]
+  T --> D{Adaptive Rerank 路由}
+  D -->|Fast| RULE[RRF + 规则排序]
+  D -->|Deep| API[Qwen Rerank API]
+  API -->|失败| RULE
+  API --> C[Context Builder：引用与证据充分性]
+  RULE --> C
+  C --> LLM[Qwen Plus 生成有证据回答]
+  LLM --> UI[流式消息与来源引用]

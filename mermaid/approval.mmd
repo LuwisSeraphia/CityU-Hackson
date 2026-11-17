@@ -1,0 +1,10 @@
+flowchart TD
+  A[新候选触及已有重要事实] --> B[Resolver：关系类型 / base_version]
+  B --> P[生成待审 Proposal]
+  P --> UI[用户查看 Before / After / 来源]
+  UI -->|忽略| REJ[REJECTED：不改事实]
+  UI -->|确认| CHECK{当前版本仍匹配 base_version 吗}
+  CHECK -->|否| STALE[409 STALE：重查并提示]
+  CHECK -->|是| TX[Controller 原子提交新版本、操作日志、Outbox]
+  TX --> IDX[异步向量索引刷新]
+  IDX --> READY[更新时间线内联反馈]

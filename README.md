@@ -128,4 +128,12 @@ dist/                      构建产物，不纳入 Git
 git remote -v
 ```
 
-本地初始化和远程绑定不等于已推送代码。首次提交并发布时，需先配置自己的 Git 身份和 GitHub 访问权限，再执行提交和推送。
+提交与推送使用当前仓库的 Git 配置；请在本机完成 GitHub 认证。
+
+## 合并后的前后端边界
+
+唯一前端为根目录 `index.html`、`src/` 和 `vite.config.js`（知乎 / Three.js）。拉取仓库中的 Next.js / React 前端 `apps/web/` 已移除，根目录 npm 命令只运行知乎前端，不再使用 npm workspaces。
+
+拉取的 FastAPI 后端 `apps/api/`、数据库配置 `infra/` 和相关脚本保留。后端安装与启动见 [本地配置说明](docs/local-setup.md)。当前知乎前端仍使用本地任务与知识检索，尚未调用后端 API；移除旧前端不代表已完成接口对接。不要将后端 API_TOKEN、模型密钥或数据库密码放入前端的 VITE 环境变量。
+
+仓库中的 DESIGN.md、PRODUCT.md、UX-CONTRACT.md 及部分 PRD / 验收记录为拉取后端时附带的历史材料，不代表当前知乎界面的实现状态。

@@ -1,0 +1,314 @@
+[
+  {
+    "id": "case-01",
+    "text": "我最近可以学什么",
+    "paraphrase": "结合我的情况推荐学习方向",
+    "required_sources": [
+      "profile",
+      "memory"
+    ],
+    "recent_turns": [],
+    "paraphrase_2": "现在学哪个方向更符合我的目标"
+  },
+  {
+    "id": "case-02",
+    "text": "按我的目标安排这周",
+    "paraphrase": "帮我规划本周重点",
+    "required_sources": [
+      "profile",
+      "memory"
+    ],
+    "recent_turns": [],
+    "paraphrase_2": "这周我该把时间花在哪些事上"
+  },
+  {
+    "id": "case-03",
+    "text": "我应该先推进哪个项目",
+    "paraphrase": "根据我的近期计划排个优先级",
+    "required_sources": [
+      "profile",
+      "memory"
+    ],
+    "recent_turns": [],
+    "paraphrase_2": "我的几个项目哪个最值得先做"
+  },
+  {
+    "id": "case-04",
+    "text": "我上次为什么放弃那个方案",
+    "paraphrase": "回忆一下我否决方案的原因",
+    "required_sources": [
+      "memory"
+    ],
+    "recent_turns": [],
+    "paraphrase_2": "找出我当初拒绝那个方案的理由"
+  },
+  {
+    "id": "case-05",
+    "text": "我昨天听了什么歌",
+    "paraphrase": "昨天我提到的歌曲是哪首",
+    "required_sources": [
+      "memory"
+    ],
+    "recent_turns": [],
+    "paraphrase_2": "回想一下昨天分享的歌名"
+  },
+  {
+    "id": "case-06",
+    "text": "我之前设定的截止时间是什么",
+    "paraphrase": "找一下我说过的交付日期",
+    "required_sources": [
+      "memory"
+    ],
+    "recent_turns": [],
+    "paraphrase_2": "我说过的截止日期是哪天"
+  },
+  {
+    "id": "case-07",
+    "text": "综合之前的聊天总结我",
+    "paraphrase": "你了解的我是什么样的人",
+    "required_sources": [
+      "profile"
+    ],
+    "recent_turns": [],
+    "paraphrase_2": "根据我们的交流描述一下我"
+  },
+  {
+    "id": "case-08",
+    "text": "我有哪些长期习惯",
+    "paraphrase": "概括一下我的稳定偏好",
+    "required_sources": [
+      "profile"
+    ],
+    "recent_turns": [],
+    "paraphrase_2": "归纳我持续表现出来的习惯"
+  },
+  {
+    "id": "case-09",
+    "text": "我的目标有什么变化",
+    "paraphrase": "比较一下我前后的目标",
+    "required_sources": [
+      "memory"
+    ],
+    "recent_turns": [
+      {
+        "role": "user",
+        "content": "之前保存过一个旧版本，我后来更新过该信息。"
+      }
+    ],
+    "paraphrase_2": "回顾我的目标前后有哪些不同"
+  },
+  {
+    "id": "case-10",
+    "text": "我的学习习惯怎么样",
+    "paraphrase": "总结我的学习方式",
+    "required_sources": [
+      "profile"
+    ],
+    "recent_turns": [],
+    "paraphrase_2": "我平时如何学习新知识"
+  },
+  {
+    "id": "case-11",
+    "text": "我喜欢怎样的回答风格",
+    "paraphrase": "你应该如何向我解释问题",
+    "required_sources": [
+      "profile"
+    ],
+    "recent_turns": [],
+    "paraphrase_2": "你记得我偏好的解释方式吗"
+  },
+  {
+    "id": "case-12",
+    "text": "我通常什么时候工作",
+    "paraphrase": "我的作息安排是什么",
+    "required_sources": [
+      "profile"
+    ],
+    "recent_turns": [],
+    "paraphrase_2": "我一般在哪个时间段处理工作"
+  },
+  {
+    "id": "case-13",
+    "text": "解释数据库索引",
+    "paraphrase": "数据库索引是什么意思",
+    "required_sources": [],
+    "recent_turns": [],
+    "paraphrase_2": "给我讲讲索引的用途"
+  },
+  {
+    "id": "case-14",
+    "text": "什么是二分查找",
+    "paraphrase": "解释一下二分搜索",
+    "required_sources": [],
+    "recent_turns": [],
+    "paraphrase_2": "二分算法如何查找数据"
+  },
+  {
+    "id": "case-15",
+    "text": "把这句话翻译成英文：你好",
+    "paraphrase": "英文怎么说：你好",
+    "required_sources": [],
+    "recent_turns": [],
+    "paraphrase_2": "将你好译为英语"
+  },
+  {
+    "id": "case-16",
+    "text": "总结我上传的文件",
+    "paraphrase": "概括附件的要点",
+    "required_sources": [
+      "file"
+    ],
+    "recent_turns": [],
+    "paraphrase_2": "提炼附件中的主要观点"
+  },
+  {
+    "id": "case-17",
+    "text": "附件中预算是多少",
+    "paraphrase": "帮我找出文件里的预算数字",
+    "required_sources": [
+      "file"
+    ],
+    "recent_turns": [],
+    "paraphrase_2": "从附件找出资金预算"
+  },
+  {
+    "id": "case-18",
+    "text": "文档的第二节讲了什么",
+    "paraphrase": "解释上传资料第二节",
+    "required_sources": [
+      "file"
+    ],
+    "recent_turns": [],
+    "paraphrase_2": "概括文件第二部分"
+  },
+  {
+    "id": "case-19",
+    "text": "查一下今天的科技新闻",
+    "paraphrase": "今天科技领域有什么新闻",
+    "required_sources": [
+      "web"
+    ],
+    "recent_turns": [],
+    "paraphrase_2": "帮我检索当天科技资讯"
+  },
+  {
+    "id": "case-20",
+    "text": "找官方最新发布说明",
+    "paraphrase": "查找最新版本的官方更新说明",
+    "required_sources": [
+      "web"
+    ],
+    "recent_turns": [],
+    "paraphrase_2": "请提供最新官方版本公告"
+  },
+  {
+    "id": "case-21",
+    "text": "核实这个公开消息是否属实",
+    "paraphrase": "联网验证这条新闻",
+    "required_sources": [
+      "web"
+    ],
+    "recent_turns": [],
+    "paraphrase_2": "帮我查证这条新闻的真实性"
+  },
+  {
+    "id": "case-22",
+    "text": "那个计划现在怎么样",
+    "paraphrase": "刚才说的计划进展如何",
+    "required_sources": [
+      "memory"
+    ],
+    "recent_turns": [
+      {
+        "role": "user",
+        "content": "我们正在讨论之前记录的项目计划。"
+      }
+    ],
+    "paraphrase_2": "我们之前说的计划进展到哪了"
+  },
+  {
+    "id": "case-23",
+    "text": "再比较一下之前两个方案",
+    "paraphrase": "重新对比我们讨论过的方案",
+    "required_sources": [
+      "memory"
+    ],
+    "recent_turns": [
+      {
+        "role": "user",
+        "content": "我们正在讨论之前记录的项目计划。"
+      }
+    ],
+    "paraphrase_2": "刚刚那两种方案各有什么差别"
+  },
+  {
+    "id": "case-24",
+    "text": "我上次提到的那件事呢",
+    "paraphrase": "回忆刚才说到的历史事件",
+    "required_sources": [
+      "memory"
+    ],
+    "recent_turns": [
+      {
+        "role": "user",
+        "content": "我们正在讨论之前记录的项目计划。"
+      }
+    ],
+    "paraphrase_2": "之前提过的那段经历是什么"
+  },
+  {
+    "id": "case-25",
+    "text": "我现在的住址是哪一个",
+    "paraphrase": "旧地址和新地址哪个有效",
+    "required_sources": [
+      "memory"
+    ],
+    "recent_turns": [
+      {
+        "role": "user",
+        "content": "之前保存过一个旧版本，我后来更新过该信息。"
+      }
+    ],
+    "paraphrase_2": "我更新后的地址是什么"
+  },
+  {
+    "id": "case-26",
+    "text": "不要用我过去的记忆，解释递归",
+    "paraphrase": "只解释递归，不结合个人信息",
+    "required_sources": [],
+    "recent_turns": [],
+    "paraphrase_2": "不使用个人资料介绍递归原理"
+  },
+  {
+    "id": "case-27",
+    "text": "帮我删除所有记忆",
+    "paraphrase": "清除我保存的个人记录",
+    "required_sources": [],
+    "recent_turns": [],
+    "paraphrase_2": "请把个人记忆全部移除"
+  },
+  {
+    "id": "case-28",
+    "text": "我没有相关经历记录，你能先给通用建议吗",
+    "paraphrase": "缺少个人信息时先给一般建议",
+    "required_sources": [],
+    "recent_turns": [],
+    "paraphrase_2": "暂时不用了解我，先给一般建议"
+  },
+  {
+    "id": "case-29",
+    "text": "你好",
+    "paraphrase": "嗨",
+    "required_sources": [],
+    "recent_turns": [],
+    "paraphrase_2": "早上好"
+  },
+  {
+    "id": "case-30",
+    "text": "谢谢你",
+    "paraphrase": "谢谢",
+    "required_sources": [],
+    "recent_turns": [],
+    "paraphrase_2": "多谢"
+  }
+]

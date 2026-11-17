@@ -1,0 +1,274 @@
+{
+  "memories": [
+    {
+      "id": "time",
+      "owner": "eval",
+      "kind": "fact",
+      "content": "青禾项目每周可投入5小时。",
+      "status": "current",
+      "source_ids": ["source-time"]
+    },
+    {
+      "id": "goal",
+      "owner": "eval",
+      "kind": "fact",
+      "content": "青禾是研究生论文阅读协作工具。",
+      "status": "current",
+      "source_ids": ["source-goal"]
+    },
+    {
+      "id": "skill",
+      "owner": "eval",
+      "kind": "fact",
+      "content": "用户会Python，刚开始学习TypeScript。",
+      "status": "current",
+      "source_ids": ["source-skill"]
+    },
+    {
+      "id": "deadline",
+      "owner": "eval",
+      "kind": "fact",
+      "content": "用户计划2026-12-15完成原型。",
+      "status": "planned",
+      "source_ids": ["source-deadline"]
+    },
+    {
+      "id": "cafe",
+      "owner": "eval",
+      "kind": "fact",
+      "content": "用户喜欢安静的咖啡馆。",
+      "status": "current",
+      "source_ids": ["source-cafe"]
+    },
+    {
+      "id": "style",
+      "owner": "eval",
+      "kind": "fact",
+      "content": "用户喜欢先给结论，再列三条步骤的回答。",
+      "status": "current",
+      "source_ids": ["source-style"]
+    },
+    {
+      "id": "visit",
+      "owner": "eval",
+      "kind": "episode",
+      "content": "用户2026-10-30完成三次访谈。",
+      "status": "current",
+      "source_ids": ["source-visit"]
+    },
+    {
+      "id": "operation",
+      "owner": "eval",
+      "kind": "fact",
+      "content": "用户要求忘记页面颜色偏好。",
+      "status": "current",
+      "source_ids": ["source-operation"]
+    },
+    {
+      "id": "keys",
+      "owner": "eval",
+      "kind": "fact",
+      "content": "用户经常忘记带钥匙。",
+      "status": "current",
+      "source_ids": ["source-keys"]
+    },
+    {
+      "id": "old",
+      "owner": "eval",
+      "kind": "fact",
+      "content": "青禾项目每周可投入8小时。",
+      "status": "historical",
+      "source_ids": ["source-old"]
+    },
+    {
+      "id": "deleted",
+      "owner": "eval",
+      "kind": "fact",
+      "content": "用户喜欢绿色页面。",
+      "status": "deleted",
+      "source_ids": ["source-deleted"]
+    }
+  ],
+  "queries": [
+    {
+      "id": "Q01",
+      "split": "dev",
+      "query": "青禾每周能投入多少时间？",
+      "required": ["time"]
+    },
+    {
+      "id": "Q02",
+      "split": "dev",
+      "query": "我目前每星期能给青禾多少工时？",
+      "required": ["time"]
+    },
+    {
+      "id": "Q03",
+      "split": "test",
+      "query": "按照青禾当前每周可用时间安排工作。",
+      "required": ["time"]
+    },
+    {
+      "id": "Q04",
+      "split": "dev",
+      "query": "青禾项目的用途是什么？",
+      "required": ["goal"]
+    },
+    {
+      "id": "Q05",
+      "split": "dev",
+      "query": "我的青禾要帮助什么用户？",
+      "required": ["goal"]
+    },
+    {
+      "id": "Q06",
+      "split": "test",
+      "query": "回忆青禾的目标。",
+      "required": ["goal"]
+    },
+    {
+      "id": "Q07",
+      "split": "dev",
+      "query": "我的编程基础怎样？",
+      "required": ["skill"]
+    },
+    {
+      "id": "Q08",
+      "split": "dev",
+      "query": "我已经会哪些语言？",
+      "required": ["skill"]
+    },
+    {
+      "id": "Q09",
+      "split": "test",
+      "query": "我学习TypeScript到什么程度？",
+      "required": ["skill"]
+    },
+    {
+      "id": "Q10",
+      "split": "dev",
+      "query": "我计划什么时候完成原型？",
+      "required": ["deadline"]
+    },
+    {
+      "id": "Q11",
+      "split": "dev",
+      "query": "青禾原型的预定日期？",
+      "required": ["deadline"]
+    },
+    {
+      "id": "Q12",
+      "split": "test",
+      "query": "我原先安排的原型截止时间？",
+      "required": ["deadline"]
+    },
+    {
+      "id": "Q13",
+      "split": "dev",
+      "query": "我喜欢什么样的咖啡馆？",
+      "required": ["cafe"]
+    },
+    {
+      "id": "Q14",
+      "split": "dev",
+      "query": "按我的偏好选择咖啡店环境。",
+      "required": ["cafe"]
+    },
+    {
+      "id": "Q15",
+      "split": "test",
+      "query": "我对咖啡馆安静程度的要求？",
+      "required": ["cafe"]
+    },
+    {
+      "id": "Q16",
+      "split": "dev",
+      "query": "我的饮食禁忌是什么？",
+      "required": []
+    },
+    {
+      "id": "Q17",
+      "split": "dev",
+      "query": "我有没有牛肉过敏？",
+      "required": []
+    },
+    {
+      "id": "Q18",
+      "split": "test",
+      "query": "我的早餐有什么限制？",
+      "required": []
+    },
+    {
+      "id": "Q19",
+      "split": "dev",
+      "query": "我容易忘记带什么？",
+      "required": ["keys"]
+    },
+    {
+      "id": "Q20",
+      "split": "dev",
+      "query": "出门带钥匙对我有什么问题？",
+      "required": ["keys"]
+    },
+    {
+      "id": "Q21",
+      "split": "test",
+      "query": "提醒我一个常忘记的随身物品。",
+      "required": ["keys"]
+    },
+    {
+      "id": "Q22",
+      "split": "dev",
+      "query": "我完成了哪些用户调研？",
+      "required": ["visit"]
+    },
+    {
+      "id": "Q23",
+      "split": "dev",
+      "query": "用户访谈做了几次？",
+      "required": ["visit"]
+    },
+    {
+      "id": "Q24",
+      "split": "test",
+      "query": "2026年10月30日我完成了什么？",
+      "required": ["visit"]
+    },
+    {
+      "id": "Q25",
+      "split": "dev",
+      "query": "安排青禾开发，结合目标、工时、技术基础和原型日期。",
+      "required": ["time", "goal", "skill", "deadline"]
+    },
+    {
+      "id": "Q26",
+      "split": "dev",
+      "query": "青禾下一步规划请考虑我的能力和截止时间及投入。",
+      "required": ["time", "goal", "skill", "deadline"]
+    },
+    {
+      "id": "Q27",
+      "split": "test",
+      "query": "综合项目方向、每周可用时间、技能和计划日期列行动。",
+      "required": ["time", "goal", "skill", "deadline"]
+    },
+    {
+      "id": "Q28",
+      "split": "dev",
+      "query": "我的工资是多少？",
+      "required": []
+    },
+    {
+      "id": "Q29",
+      "split": "dev",
+      "query": "我的住址在哪里？",
+      "required": []
+    },
+    {
+      "id": "Q30",
+      "split": "test",
+      "query": "我买过什么汽车？",
+      "required": []
+    }
+  ]
+}
