@@ -4,10 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
+    "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
-    "test": "node tests/AgentStore.test.js && node tests/World.test.js && node tests/ConversationStore.test.js && node tests/Knowledge.test.js",
+    "test": "node tests/AgentStore.test.js && node tests/World.test.js && node tests/ConversationStore.test.js && node tests/Knowledge.test.js && node --test tests/AgentClient.test.js",
     "check": "node scripts/check.mjs"
   },
   "dependencies": {

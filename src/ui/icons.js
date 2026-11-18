@@ -1,5 +1,10 @@
 /** Small inline SVG icon set; no font or image requests. */
 const paths = {
+  web: 'M3 4h18v16H3ZM3 9h18M6 6.5h.01M9 6.5h.01M7 13h10M7 16h6',
+  workflow: 'M9 2h6v5H9ZM2 17h6v5H2Zm14 0h6v5h-6ZM12 7v5M5 17v-5h14v5',
+  archive: 'M3 4h18v5H3Zm2 5v12h14V9M9 13h6',
+  more: 'M5 12h.01M12 12h.01M19 12h.01M3 12a2 2 0 1 0 4 0 2 2 0 0 0-4 0m7 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0m7 0a2 2 0 1 0 4 0 2 2 0 0 0-4 0',
+  settings: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8M12 2v3m0 14v3M2 12h3m14 0h3M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2',
   zhihu: 'M10 13a5 5 0 0 0 7 0l4-4a5 5 0 0 0-7-7l-2 2M14 11a5 5 0 0 0-7 0l-4 4a5 5 0 0 0 7 7l2-2',
   knowledge: 'M3 3h18v18H3Zm0 6h18M3 15h18M7 3v6m4-6v6m6 0v6m-9 0v6',
   chat: 'M4 3h16v13H9l-5 4V3m8 3v7m-4-3h8',

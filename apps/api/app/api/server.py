@@ -55,6 +55,9 @@ class EditCandidate(Strict):
 
 
 class NewConversation(Strict):
+    request_id: str | None = Field(
+        default=None, min_length=1, max_length=64, pattern=r"^[a-zA-Z0-9_-]+$"
+    )
     project: str = Field(default="default", min_length=1, max_length=128)
 
 
@@ -133,6 +136,12 @@ def create_app(settings=default_settings, *, database=None, provider=None):
             raise AppError("UNAUTHORIZED", "无权访问此服务。", 401)
         return settings.owner_id
 
+    from app.api.knowledge_classification import ClassificationInput, classify_knowledge
+
+    @app.post("/api/knowledge/classify")
+    async def classify_local_note(body: ClassificationInput, owner=Depends(authenticate)):
+        return await classify_knowledge(body, cloud)
+
     def ready(owner=Depends(authenticate)):
         if state["error"] or not state["db"]:
             raise AppError("DATABASE_UNAVAILABLE", state["error"] or "数据库尚未连接。", 503)
@@ -149,6 +158,7 @@ def create_app(settings=default_settings, *, database=None, provider=None):
 
     app.include_router(memory_v2_router(state, ready, settings))
     from app.api.context_routes import router as context_router
+
     app.include_router(context_router(state, ready, settings))
 
     @app.get("/api/v1/health/live")
@@ -158,6 +168,8 @@ def create_app(settings=default_settings, *, database=None, provider=None):
     @app.get("/api/v1/health/ready")
     async def health():
         return {
+            "mode": settings.runtime_mode,
+            "worker_required": settings.worker_enabled,
             "database": bool(state["db"] and not state["error"]),
             "model_configured": bool(settings.dashscope_api_key.get_secret_value()),
             "api_token_configured": bool(settings.api_token.get_secret_value()),
@@ -171,8 +183,11 @@ def create_app(settings=default_settings, *, database=None, provider=None):
     @app.get("/api/v1/workspace")
     async def workspace(owner=Depends(ready)):
         from app.domain.memory.models import Tombstone
+
         with state["db"].session() as session:
-            deleted = session.query(Tombstone.original_id).filter_by(owner=owner, entity_type="conversation")
+            deleted = session.query(Tombstone.original_id).filter_by(
+                owner=owner, entity_type="conversation"
+            )
             rows = (
                 session.query(Conversation)
                 .filter_by(owner=owner)
@@ -189,7 +204,23 @@ def create_app(settings=default_settings, *, database=None, provider=None):
     @app.post("/api/v1/conversations", status_code=201)
     async def create_conversation(body: NewConversation, owner=Depends(ready)):
         with state["db"].session() as session:
+            if body.request_id:
+                from app.domain.memory.models import Tombstone
+
+                if (
+                    session.query(Tombstone)
+                    .filter_by(owner=owner, entity_type="conversation", original_id=body.request_id)
+                    .first()
+                ):
+                    raise AppError("CONVERSATION_DELETED", "该会话已删除，请新建对话。", 409)
+                existing = session.get(Conversation, body.request_id)
+                if existing:
+                    if existing.owner != owner or existing.project != body.project:
+                        raise AppError("IDEMPOTENCY_CONFLICT", "会话请求编号已被使用。", 409)
+                    return conversation_view(session, existing)
             row = Conversation(owner=owner, project=body.project)
+            if body.request_id:
+                row.id = body.request_id
             session.add(row)
             session.flush()
             if settings.memory_v2_enabled:
@@ -201,6 +232,7 @@ def create_app(settings=default_settings, *, database=None, provider=None):
     @app.delete("/api/v1/conversations/{identifier}")
     async def remove_conversation(identifier: str, owner=Depends(ready)):
         from app.application.conversations import delete_conversation
+
         return delete_conversation(state["db"], owner, identifier)
 
     @app.get("/api/v1/conversations/{identifier}")

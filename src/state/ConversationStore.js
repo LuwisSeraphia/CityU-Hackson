@@ -23,6 +23,16 @@ export class ConversationStore {
     this.sessions.unshift(session); this.activeId = session.id; this.save(); return session;
   }
   select(id) { if (!this.sessions.some(s => s.id === id)) return false; this.activeId = id; this.save(); return true; }
+  upsertRemote(remote, agentId = 'browser', localId) {
+    if (!remote || typeof remote.id !== 'string' || !Array.isArray(remote.messages)) throw new Error('后端会话格式无效');
+    let session = this.sessions.find(s => s.backendId === remote.id || s.id === localId || s.id === remote.id);
+    if (!session) {
+      session = { id: remote.id, draft: '', agentId, messages: [] };
+      this.sessions.push(session);
+    }
+    Object.assign(session, { backendId: remote.id, title: remote.title || '新对话', updatedAt: remote.updatedAt, messages: remote.messages.filter(m => m && ['user', 'assistant'].includes(m.role) && typeof m.text === 'string').map(m => ({ ...m, agentId: session.agentId || agentId })) });
+    this.save(); return session;
+  }
   append(text, agent, reply) {
     const session = this.active;
     text = String(text).trim(); if (!session || !text) return false;

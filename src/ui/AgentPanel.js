@@ -52,7 +52,7 @@ export class AgentPanel {
     const history = this.container.querySelector('#agent-chat-history');
     const conversation = messages.filter(message => message.agentId === selectedId);
     history.innerHTML = conversation.length
-      ? conversation.map(message => `<p><small>你 · ${new Date(message.createdAt).toLocaleTimeString()}</small><br>${this.escape(message.text)}</p>`).join('') + '<span>任务已记录到工作空间。当前为模拟执行，尚未连接 AI。</span>'
+      ? conversation.map(message => `<p><small>你 · ${new Date(message.createdAt).toLocaleTimeString()}</small><br>${this.escape(message.text)}</p>`).join('') + '<span>任务交代已记录。后端回答请在对应对话中查看；此面板的手动状态操作为本地演示。</span>'
       : '<span>从办公室叫一位伙伴，直接交代要做的事。</span>';
     if (this.lastId !== selectedId) this.container.querySelector('#agent-chat-input').value = this.drafts.get(selectedId) || '';
     history.scrollTop = history.scrollHeight;

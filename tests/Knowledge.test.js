@@ -130,3 +130,94 @@ test('link-only bookmarks are not indexed and non-Zhihu URLs are rejected', () =
     assert.throws(() => knowledge.addZhihuLink('invalid', url, 'text'));
   }
 });
+
+test('legacy notes gain metadata without losing text and categories survive reload', () => {
+  const storage = memory();
+  storage.setItem('office-knowledge-v1', JSON.stringify([{ id: 'old', title: '旧资料', text: '不能丢失的正文' }]));
+  const store = new KnowledgeStore(storage);
+  assert.equal(store.documents[0].category, '待整理');
+  assert.deepEqual(store.documents[0].tags, []);
+  store.addCategory('旅行见闻');
+  store.update('old', { category: '旅行见闻', tags: '香港，阅读' });
+  const restored = new KnowledgeStore(storage);
+  assert.equal(restored.documents[0].text, '不能丢失的正文');
+  assert.equal(restored.documents[0].category, '旅行见闻');
+  assert.deepEqual(restored.documents[0].tags, ['香港', '阅读']);
+  restored.renameCategory('旅行见闻', '城市观察');
+  assert.equal(restored.documents[0].category, '城市观察');
+  assert.throws(() => restored.renameCategory('城市观察', '自然知识'));
+  restored.removeCategory('城市观察');
+  assert.equal(restored.documents[0].category, '待整理');
+  assert.equal(restored.documents[0].text, '不能丢失的正文');
+  assert.throws(() => restored.removeCategory('待整理'));
+});
+
+test('recently read notes rise in inspiration without changing creation dates', () => {
+  const store = new KnowledgeStore(memory());
+  const first = store.add('第一本', '资料一');
+  const second = store.add('第二本', '资料二');
+  first.createdAt = first.updatedAt = 1;
+  second.createdAt = second.updatedAt = 2;
+  assert.equal(store.recent(1)[0].id, second.id);
+  store.touch(first.id);
+  assert.equal(store.recent(1)[0].id, first.id);
+  assert.equal(first.createdAt, 1);
+  store.update(first.id, { title: '修订版', text: '可检索的光合作用知识' });
+  assert.equal(store.search('光合作用')[0].title, '修订版');
+});
+
+test('classification suggestions and edits validate content and keep failures atomic', async () => {
+  const { suggestCategory } = await import('../src/knowledge/KnowledgeStore.js');
+  assert.equal(suggestCategory('植物的光合作用', '生物与自然科学'), '自然知识');
+  assert.equal(suggestCategory('每日食谱', '饮食健康'), '生活常识');
+  assert.equal(suggestCategory('随手记', 'xyz'), '待整理');
+  const store = new KnowledgeStore(memory());
+  const note = store.add('原始资料', '保留正文');
+  assert.throws(() => store.update(note.id, { title: '', category: '不应新增' }));
+  assert.equal(note.title, '原始资料');
+  assert.ok(!store.categories.includes('不应新增'));
+  const bookmark = store.addZhihuLink('书签', 'https://www.zhihu.com/question/1');
+  store.update(bookmark.id, { category: '人文知识', tags: '待读' });
+  assert.equal(bookmark.text, '');
+  assert.equal(bookmark.sourceUrl, 'https://www.zhihu.com/question/1');
+});
+
+test('free bubble field has varied sizes and independent positions inside narrow and wide bounds', async () => {
+  const { createBubbleLayout, advanceBubbles } = await import('../src/knowledge/InspirationField.js');
+  let seed = 29;
+  const random = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
+  for (const [width, height] of [[275, 990], [1050, 650]]) {
+    const bubbles = createBubbleLayout(width, height, 10, random);
+    assert.ok(new Set(bubbles.map(b => Math.round(b.radius))).size > 4);
+    assert.ok(new Set(bubbles.map(b => Math.round(b.y))).size > 6);
+    const original = bubbles.map(b => ({ x: b.x, y: b.y }));
+    for (let frame = 0; frame < 1800; frame++) advanceBubbles(bubbles, width, height, 1 / 60, frame / 60, 0);
+    assert.deepEqual({ x: bubbles[0].x, y: bubbles[0].y }, original[0]);
+    assert.ok(bubbles.slice(1).every((b, i) => Math.hypot(b.x - original[i + 1].x, b.y - original[i + 1].y) > 1));
+    for (const b of bubbles) {
+      assert.ok(b.x >= b.radius && b.x <= width - b.radius);
+      assert.ok(b.y >= b.radius && b.y <= height - b.radius);
+    }
+  }
+});
+
+test('starter bubbles seed an empty library once, preserve real notes and stay removed after deletion', () => {
+  const storage = memory();
+  const store = new KnowledgeStore(storage);
+  assert.equal(store.addExamples({ automatic: true }), 8);
+  assert.equal(new Set(store.documents.map(d => d.category)).size, 5);
+  assert.ok(store.documents.every(d => d.isExample && d.text && d.tags.includes('示例')));
+  const first = store.documents[0];
+  store.update(first.id, { title: '我修改过的示例' });
+  const restored = new KnowledgeStore(storage);
+  assert.equal(restored.addExamples({ automatic: true }), 0);
+  assert.equal(restored.documents[0].title, '我修改过的示例');
+  for (const d of [...restored.documents]) restored.remove(d.id);
+  assert.equal(new KnowledgeStore(storage).addExamples({ automatic: true }), 0);
+  assert.equal(restored.addExamples(), 8);
+  assert.equal(restored.addExamples(), 0);
+  const userStore = new KnowledgeStore(memory());
+  userStore.add('自己的资料', '自己的正文');
+  assert.equal(userStore.addExamples({ automatic: true }), 0);
+  assert.equal(userStore.documents.length, 1);
+});

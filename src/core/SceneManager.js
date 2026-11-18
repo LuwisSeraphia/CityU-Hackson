@@ -6,7 +6,7 @@ export class SceneManager {
   constructor(container) {
     this.container = container;
     this.scene = new THREE.Scene();
-    this.scene.background = new THREE.Color('#f7f7f5');
+    this.scene.background = new THREE.Color('#f7faff');
     this.cameraManager = new CameraManager();
     this.camera = this.cameraManager.camera;
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
@@ -40,7 +40,7 @@ export class SceneManager {
     const fill = new THREE.DirectionalLight('#e9f3ff', 1.1);
     fill.position.set(5, 5, -6);
     this.scene.add(fill);
-    const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: '#f7f7f5', roughness: 1 }));
+    const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: '#f7faff', roughness: 1 }));
     ground.rotation.x = -Math.PI / 2;
     ground.position.y = -0.2;
     ground.receiveShadow = true;

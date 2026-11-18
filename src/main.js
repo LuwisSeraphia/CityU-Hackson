@@ -1,4 +1,5 @@
 import './style.css';
+import './theme.css';
 import * as THREE from 'three';
 import { SceneManager } from './core/SceneManager.js';
 import { AnimationLoop } from './core/AnimationLoop.js';
@@ -22,6 +23,8 @@ const notify = message => {
   notify.timeout = setTimeout(() => toast.classList.remove('visible'), 3200);
 };
 const knowledge = new KnowledgeStore();
+const exampleCount = knowledge.addExamples({ automatic: true });
+if (exampleCount && !knowledge.persisted) notify('已加载示例知识，存储不可用，刷新后修改可能丢失');
 function retrieveKnowledge(id, query) {
   if (!office || office.agents.get(id)?.trip?.kind === 'book') { notify('伙伴正在取书或办公室尚未就绪，请稍后调用'); return null; }
   const hits = knowledge.search(query);
@@ -39,15 +42,17 @@ function retrieveKnowledge(id, query) {
 }
 const knowledgePanel = new KnowledgePanel(knowledge, store.getSnapshot().agents, retrieveKnowledge, notify);
 const workspacePanel = new WorkspacePanel(store, notify);
-const chatDrawer = new ChatDrawer(store, notify, retrieveKnowledge);
+const chatDrawer = new ChatDrawer(store, notify, { knowledgeSearch: query => knowledge.search(query) });
 const sidebar = Sidebar(document.querySelector('#sidebar'), notify, page => {
-  if (page === 'knowledge' || page === 'zhihu') { knowledgePanel.open(page === 'zhihu' ? 'zhihu' : 'all'); return; }
+  if (page === 'knowledge' || page === 'zhihu') { chatDrawer.close(); workspacePanel.dialog.close(); store.select(null); knowledgePanel.open(page === 'zhihu' ? 'zhihu' : 'all'); return; }
   knowledgePanel.root.close();
   if (page === 'chat') { workspacePanel.dialog.close(); chatDrawer.open(); }
   else { chatDrawer.close(); if (page === 'office') workspacePanel.dialog.close(); else workspacePanel.open(page); }
 });
-workspacePanel.onClose = () => { if (!chatDrawer.root.open) sidebar.setActive('office'); };
-chatDrawer.onClose = () => { if (!workspacePanel.dialog.open) sidebar.setActive('office'); };
+workspacePanel.onSkill = (agentId, prompt) => { knowledgePanel.close(); chatDrawer.startTask(agentId, prompt); sidebar.setActive('chat'); };
+knowledgePanel.onClose = () => { if (!chatDrawer.root.open) sidebar.setActive('office'); };
+workspacePanel.onClose = () => { if (!chatDrawer.root.open && !knowledgePanel.root.open) sidebar.setActive('office'); };
+chatDrawer.onClose = () => { if (!workspacePanel.dialog.open && !knowledgePanel.root.open) sidebar.setActive('office'); };
 const historyList = document.createElement('div');
 historyList.className = 'conversation-history';
 document.querySelector('.sidebar nav').append(historyList);
@@ -57,9 +62,9 @@ const stopHistory = chatDrawer.conversations.subscribe(() => {
   for (const session of chatDrawer.conversations.sessions) {
     const button = document.createElement('button');
     button.className = 'history-conversation';
-    button.textContent = session.title; button.title = session.title;
+    button.textContent = (!session.backendId && session.messages.length ? '旧记录 · ' : '') + session.title; button.title = session.title;
     button.classList.toggle('active', chatDrawer.conversations.activeId === session.id);
-    button.onclick = () => { workspacePanel.dialog.close(); chatDrawer.open(session.id); sidebar.setActive('chat'); };
+    button.onclick = () => { knowledgePanel.close(); workspacePanel.dialog.close(); chatDrawer.open(session.id); sidebar.setActive('chat'); };
     historyList.append(button);
   }
 });
@@ -78,7 +83,7 @@ const libraryLabel = document.createElement('button');
 libraryLabel.className = 'world-label library-label';
 libraryLabel.innerHTML = '<span class="label-name">▥ 图书墙 · RAG 知识区</span><span class="label-state">管理资料 / 调用取书</span>';
 labels.append(libraryLabel);
-libraryLabel.onclick = () => knowledgePanel.open();
+libraryLabel.onclick = () => { chatDrawer.close(); workspacePanel.dialog.close(); store.select(null); knowledgePanel.open(); sidebar.setActive('knowledge'); };
 labels.addEventListener('click', event => {
   const label = event.target.closest('[data-agent]');
   if (label) store.select(label.dataset.agent);
@@ -114,7 +119,7 @@ try {
   });
   loop = new AnimationLoop(delta => {
     office.update(delta);
-    if (chatDrawer.root.open) return;
+    if (chatDrawer.root.open || knowledgePanel.root.open) return;
     manager.controls.update();
     raycast.update();
     const width = container.clientWidth, height = container.clientHeight;
@@ -126,7 +131,7 @@ try {
     });
     projected.copy(office.library.labelAnchor).project(manager.camera);
     libraryLabel.style.transform = `translate(-50%, -100%) translate(${(projected.x * .5 + .5) * width}px, ${(-projected.y * .5 + .5) * height}px)`;
-  }, () => { if (!chatDrawer.root.open) manager.render(); });
+  }, () => { if (!chatDrawer.root.open && !knowledgePanel.root.open) manager.render(); });
   manager.render(); document.querySelector('#scene-loading').hidden = true;
   updatePauseButton(); loop.start();
   pauseButton.onclick = () => { loop.paused = !loop.paused; updatePauseButton(); };
@@ -152,5 +157,5 @@ if (import.meta.hot) import.meta.hot.dispose(() => {
   unsubscribe?.(); loop?.dispose(); raycast?.dispose(); office?.dispose(); manager?.dispose();
   knowledgePanel.dispose();
   clearInterval(scheduleTimer); stopHistory(); workspacePanel.dispose(); chatDrawer.dispose();
-  statusPanel.dispose(); agentPanel.dispose();
+  sidebar.dispose(); statusPanel.dispose(); agentPanel.dispose();
 });
