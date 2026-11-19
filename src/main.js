@@ -49,7 +49,8 @@ const sidebar = Sidebar(document.querySelector('#sidebar'), notify, page => {
   if (page === 'chat') { workspacePanel.dialog.close(); chatDrawer.open(); }
   else { chatDrawer.close(); if (page === 'office') workspacePanel.dialog.close(); else workspacePanel.open(page); }
 });
-workspacePanel.onSkill = (agentId, prompt) => { knowledgePanel.close(); chatDrawer.startTask(agentId, prompt); sidebar.setActive('chat'); };
+workspacePanel.isBackendBusy = () => chatDrawer.controller.busy;
+workspacePanel.onSkill = (agentId, prompt) => { if (chatDrawer.controller.busy) { notify('已有回答正在运行，请等待结束后再提交任务'); return; } knowledgePanel.close(); chatDrawer.startTask(agentId, prompt); sidebar.setActive('chat'); };
 knowledgePanel.onClose = () => { if (!chatDrawer.root.open) sidebar.setActive('office'); };
 workspacePanel.onClose = () => { if (!chatDrawer.root.open && !knowledgePanel.root.open) sidebar.setActive('office'); };
 chatDrawer.onClose = () => { if (!workspacePanel.dialog.open && !knowledgePanel.root.open) sidebar.setActive('office'); };

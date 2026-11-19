@@ -17,7 +17,7 @@ export class WorkspacePanel {
       if ('pick' in d) this.pickFiles();
       if ('remove' in d) { const f = this.files.splice(Number(d.remove),1)[0]; if(f?.url) URL.revokeObjectURL(f.url); this.render(); }
       if (d.toggle) { const s = this.schedules.find(s=>s.id===d.toggle); if(s) s.enabled=!s.enabled; this.save(); this.render(); }
-      if (d.run) { const s=this.schedules.find(s=>s.id===d.run); if(s) this.assign(s.agent,s.name); }
+      if (d.run) { const s=this.schedules.find(s=>s.id===d.run); if(s) { this.dialog.close(); if(this.onSkill) this.onSkill(s.agent,s.name); else this.assign(s.agent,s.name); } }
       if (d.delete) { this.schedules=this.schedules.filter(s=>s.id!==d.delete); this.save(); this.render(); }
     });
   }
@@ -48,7 +48,7 @@ export class WorkspacePanel {
     if(p==='chat') html=`<p>选择办公室里的伙伴，直接交代任务。</p><div class="workspace-cards">${agents.map(a=>`<button data-agent="${a.id}"><strong>${a.name}</strong><span>${a.role}</span><small>${STATE_LABELS[a.state]} →</small></button>`).join('')}</div>`;
     if(p==='tool') html=`<p>选择技能，交给对应伙伴。</p><div class="workspace-cards">${SKILLS.map(skill=>`<button data-open="${skill.id}"><strong>${skill.label}</strong><span>${skill.prompt}</span><small>交给 ${skill.agent} →</small></button>`).join('')}</div>`;
     if(p==='apps') html=`<p>当前工作空间的可用工具。</p><div class="workspace-cards">${APPLICATION_TOOLS.map(([id,n])=>`<button data-open="${id}"><strong>${n}</strong><span>打开 →</span></button>`).join('')}</div>`;
-    if(p==='clock') html=`<p>定时配置保存在本浏览器。页面打开时，到点将模拟任务交给空闲 Agent；忙碌时不覆盖原任务。</p><form id="schedule-form" class="workspace-form"><label>任务内容<input name="name" required maxlength="240" placeholder="每天整理工作摘要"></label><label>伙伴<select name="agent">${agents.map(a=>`<option value="${a.id}">${a.name}</option>`).join('')}</select></label><label>每天时间<input name="time" type="time" required value="09:00"></label><button class="workspace-primary">创建自动任务</button></form><div class="schedule-list">${this.schedules.map(s=>`<article><strong>${escapeText(s.name)}</strong><small>${escapeText(s.time)} · ${escapeText(s.agent)} · ${s.enabled?'已启用':'已暂停'}</small><div><button data-toggle="${escapeText(s.id)}">${s.enabled?'暂停':'启用'}</button><button data-run="${escapeText(s.id)}">立即交代</button><button data-delete="${escapeText(s.id)}">删除</button></div></article>`).join('')||'<p>尚未创建自动任务。</p>'}</div>`;
+    if(p==='clock') html=`<p>仅页面打开时检查时间；到点或点击立即交代后，进入后端对话。关闭页面后不会执行。不要将此功能作为后台调度展示。</p><form id="schedule-form" class="workspace-form"><label>任务内容<input name="name" required maxlength="240" placeholder="每天整理工作摘要"></label><label>伙伴<select name="agent">${agents.map(a=>`<option value="${a.id}">${a.name}</option>`).join('')}</select></label><label>每天时间<input name="time" type="time" required value="09:00"></label><button class="workspace-primary">创建自动任务</button></form><div class="schedule-list">${this.schedules.map(s=>`<article><strong>${escapeText(s.name)}</strong><small>${escapeText(s.time)} · ${escapeText(s.agent)} · ${s.enabled?'已启用':'已暂停'}</small><div><button data-toggle="${escapeText(s.id)}">${s.enabled?'暂停':'启用'}</button><button data-run="${escapeText(s.id)}">立即交代</button><button data-delete="${escapeText(s.id)}">删除</button></div></article>`).join('')||'<p>尚未创建自动任务。</p>'}</div>`;
     if(['doc','image','computer'].includes(p)) {
       const files=this.files.map((f,i)=>({...f,index:i})).filter(f=>p==='image'?f.image:p==='doc'?!f.image:true);
       html=`<p>仅查看你主动选择的文件，不扫描磁盘。文件保留在本次会话，刷新后清除。</p><button class="workspace-primary" data-pick>选择${p==='image'?'图片':'文件'}</button><div class="local-files">${files.map(f=>`<article>${f.image?`<img src="${f.url}" alt="${escapeText(f.name)}">`:''}<strong>${escapeText(f.name)}</strong><small>${(f.size/1024).toFixed(1)} KB</small>${f.text!==null?`<details><summary>文本预览</summary><pre>${escapeText(f.text)}</pre></details>`:''}<button data-remove="${f.index}">移除</button></article>`).join('')||'<p>尚未选择文件。</p>'}</div>`;
@@ -69,9 +69,9 @@ export class WorkspacePanel {
   tick() {
     const n=new Date(),date=`${n.getFullYear()}-${n.getMonth()+1}-${n.getDate()}`,time=`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;
     for(const s of this.schedules) {
-      if(!s.enabled||s.time!==time||s.lastDate===date)continue;
+      if(!s.enabled||s.time!==time||s.lastDate===date||this.isBackendBusy?.())continue;
       const a=this.store.getSnapshot().agents.find(a=>a.id===s.agent);if(!a||a.taskId)continue;
-      s.lastDate=date;this.store.assignTask(s.agent,s.name);this.save();this.notify(`已定时交代：${s.name}`);
+      s.lastDate=date;this.save(); if(this.onSkill) this.onSkill(s.agent,s.name); else this.store.assignTask(s.agent,s.name); this.notify(`已触发页面内定时任务：${s.name}`);
     }
   }
   dispose(){this.files.forEach(f=>{if(f.url)URL.revokeObjectURL(f.url);});this.dialog.remove();}

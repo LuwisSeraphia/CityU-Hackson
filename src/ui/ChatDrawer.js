@@ -106,7 +106,7 @@ export class ChatDrawer {
     if (keepAtBottom) log.scrollTop = log.scrollHeight;
     const legacy = !!(session?.messages.length && !session.backendId);
     const connection = this.root.querySelector('[data-connection]');
-    connection.textContent = controller.loading ? '正在连接后端…' : !controller.ready ? '后端未就绪' : controller.health.mode === 'local_demo' ? '本地联调模式 · 非云端 AI' : '云模型已配置 · 回答将调用后端';
+    connection.textContent = controller.loading ? '正在连接后端…' : !controller.ready ? '后端未就绪' : controller.health.mode === 'local_demo' ? '本地联调模式 · 非云端 AI' : controller.health.mode === 'codex_cli' ? 'Codex CLI · 真实模型（仅公开示例）' : '云模型已配置 · 回答将调用后端';
     connection.dataset.ready = String(controller.ready);
     const error = this.root.querySelector('.chat-backend-error'); error.hidden = !controller.error && !legacy; error.textContent = legacy ? '这是旧版本地演示记录。请新建对话使用后端，原记录仍保留。' : controller.error;
     const stages = { connecting: '正在连接并提交消息…', reconnecting: '正在恢复回答连接…', received: '后端已接收', retrieving: '正在读取上下文与资料…', generating: '后端正在生成回答…', complete: '回答已保存', failed: '本次运行已结束' };

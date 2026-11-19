@@ -17,7 +17,7 @@ export function Sidebar(container, notify, onNavigate) {
       ${symbol === 'office' ? `<button class="nav-link toolbar-trigger" aria-label="工具栏" aria-expanded="false" aria-controls="radial-toolbar">${icon('apps')}<span>工具栏</span><span class="toolbar-hint">⌁</span></button><button class="nav-link more-trigger" aria-label="更多小插件" aria-expanded="false" aria-controls="sidebar-plugins">${icon('more')}<span>更多</span></button><div id="sidebar-plugins" class="sidebar-plugins" hidden>${plugins.map(([id, label]) => `<button class="nav-link plugin-link" data-nav="${id}" aria-label="${label}">${icon(id)}<span>${label}</span></button>`).join('')}</div><p class="nav-caption">对话</p>` : ''}
       <button class="nav-link ${symbol === 'office' ? 'active' : ''}" data-nav="${symbol}" aria-label="${title}" ${symbol === 'office' ? 'aria-current="page"' : ''}>${icon(symbol)}<span>${title}</span></button>`).join('')}
     </nav>
-    <footer><button class="account-button" aria-label="登录与设置">${icon('user')}<span>登录与设置</span></button><button class="notification-button" aria-label="查看通知">${icon('bell')}</button></footer>`;
+    <footer><button class="account-button" aria-label="设置">${icon('user')}<span>设置</span></button><button class="notification-button" aria-label="查看通知">${icon('bell')}</button></footer>`;
   const cleanup = new AbortController(), signal = cleanup.signal;
   const trigger = container.querySelector('.toolbar-trigger');
   const more = container.querySelector('.more-trigger');

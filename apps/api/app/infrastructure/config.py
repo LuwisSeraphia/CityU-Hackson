@@ -9,7 +9,7 @@ API_ROOT = Path(__file__).resolve().parents[2]
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=API_ROOT / ".env", extra="ignore")
-    runtime_mode: Literal["cloud", "local_demo"] = "cloud"
+    runtime_mode: Literal["cloud", "local_demo", "codex_cli"] = "cloud"
     database_url: str = ""
     dashscope_api_key: SecretStr = SecretStr("")
     api_token: SecretStr = SecretStr("")

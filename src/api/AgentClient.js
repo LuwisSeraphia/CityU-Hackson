@@ -28,7 +28,7 @@ export async function readRunStream(body, onStatus) {
 export class AgentClient {
   constructor(fetcher = globalThis.fetch.bind(globalThis), base = '/api/v1') { this.fetcher = fetcher; this.base = base; }
   async request(path, { signal, raw = false, ...options } = {}) {
-    const combined = AbortSignal.any([...(signal ? [signal] : []), AbortSignal.timeout(raw ? 130000 : 15000)]);
+    const combined = AbortSignal.any([...(signal ? [signal] : []), AbortSignal.timeout(raw ? 250000 : 15000)]);
     let response;
     try {
       response = await this.fetcher(this.base + path, { ...options, signal: combined, credentials: 'same-origin', headers: { ...(options.body && !(options.body instanceof FormData) ? { 'Content-Type': 'application/json' } : {}), ...options.headers } });

@@ -94,6 +94,16 @@ def create_app(settings=default_settings, *, database=None, provider=None):
                 await asyncio.sleep(0)
         except Exception:
             state["error"] = "PostgreSQL 未连接：请检查数据库服务、DATABASE_URL 和 pgvector 扩展。"
+        if settings.runtime_mode in ("local_demo", "codex_cli") and state.get("runtime"):
+            with state["db"].session() as session:
+                interrupted = [row.id for row in session.query(Run).filter_by(status="RUNNING")]
+            for identifier in interrupted:
+                state["runtime"].finish_error(
+                    identifier,
+                    AppError(
+                        "SERVER_RESTARTED", "服务重启中断了回答，请重试。", 503, "agent", True
+                    ),
+                )
         yield
         tasks = list(state.get("runtime").tasks.values()) if state.get("runtime") else []
         if state["worker"]:
@@ -171,7 +181,8 @@ def create_app(settings=default_settings, *, database=None, provider=None):
             "mode": settings.runtime_mode,
             "worker_required": settings.worker_enabled,
             "database": bool(state["db"] and not state["error"]),
-            "model_configured": bool(settings.dashscope_api_key.get_secret_value()),
+            "model_configured": bool(settings.dashscope_api_key.get_secret_value())
+            or settings.runtime_mode == "codex_cli",
             "api_token_configured": bool(settings.api_token.get_secret_value()),
             "worker": state["worker_ready"],
             "message": state["error"],

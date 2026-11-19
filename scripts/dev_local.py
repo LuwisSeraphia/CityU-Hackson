@@ -26,8 +26,17 @@ def main():
         action="store_true",
         help="Use apps/api/.env, PostgreSQL and the configured model",
     )
+    mode.add_argument(
+        "--codex-cli", action="store_true", help="Real model via local Codex login"
+    )
     parser.add_argument("--port", type=int, default=5173)
     parser.add_argument("--api-port", type=int, default=8000)
+    parser.add_argument(
+        "--data-dir",
+        type=Path,
+        default=None,
+        help="Persistent demo data directory",
+    )
     args = parser.parse_args()
     if args.port == args.api_port or not all(
         1024 <= p <= 65535 for p in (args.port, args.api_port)
@@ -42,8 +51,13 @@ def main():
     except ImportError:
         parser.error("请先安装 apps/api/requirements.lock 中的 Python 依赖。")
     env = dict(os.environ)
-    if args.demo:
-        data = ROOT / "apps/api/.data/local-demo"
+    if args.demo or args.codex_cli:
+        data = (
+            args.data_dir
+            or ROOT
+            / "apps/api/.data"
+            / ("codex-public-demo" if args.codex_cli else "local-demo")
+        ).resolve()
         data.mkdir(parents=True, exist_ok=True)
         token_path = data / "api-token"
         if not token_path.exists():
@@ -52,7 +66,11 @@ def main():
             token_path.chmod(0o600)
         env["API_TOKEN"] = token_path.read_text().strip()
         env["LOCAL_DEMO_DB"] = str(data / "chat.sqlite")
-        app = "app.local_demo:app_factory"
+        app = (
+            "app.codex_provider:app_factory"
+            if args.codex_cli
+            else "app.local_demo:app_factory"
+        )
     else:
         values = {**dotenv_values(ROOT / "apps/api/.env"), **os.environ}
         if not all(
@@ -85,7 +103,7 @@ def main():
         str(args.api_port),
         "--no-access-log",
     ]
-    if args.demo:
+    if args.demo or args.codex_cli:
         api_cmd.append("--factory")
     children = []
     try:
@@ -120,7 +138,13 @@ def main():
                 env=env,
             )
         )
-        label = "本地联调模式（非云模型）" if args.demo else "云模型模式"
+        label = (
+            "Codex CLI 真实模型模式"
+            if args.codex_cli
+            else "本地联调模式（非云模型）"
+            if args.demo
+            else "云模型模式"
+        )
         print(
             f"\n{label}：http://127.0.0.1:{args.port}，按 Ctrl+C 同时停止前后端。\n",
             flush=True,

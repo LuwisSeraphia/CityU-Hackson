@@ -63,3 +63,46 @@ def test_cloud_entry_never_silently_falls_back_to_local_demo():
         response = client.post("/api/v1/conversations", json={})
         assert response.status_code == 503
         assert response.json()["error"]["code"] == "API_TOKEN_NOT_CONFIGURED"
+
+
+def test_demo_skill_templates_are_explicit_and_not_execution_claims():
+    import asyncio
+    from app.local_demo import LocalDemoProvider
+
+    provider = LocalDemoProvider()
+    result = asyncio.run(provider.chat([{"role": "user", "content": "文件归档方案"}]))
+    assert "固定规则" in result["content"] and "不操作磁盘" in result["content"]
+    result = asyncio.run(provider.chat([{"role": "user", "content": "工作流程规划"}]))
+    assert "流程规划模板" in result["content"] and "非云端 AI" in result["content"]
+
+
+def test_demo_restart_marks_abandoned_run_retryable(tmp_path):
+    from app.infrastructure.db import Run, Message
+
+    path = tmp_path / "crash.sqlite"
+    headers = {"Authorization": "Bearer crash-token"}
+    app = create_local_demo(path, "crash-token")
+    with TestClient(app, headers=headers) as client:
+        cid = client.post("/api/v1/conversations", json={}).json()["id"]
+        with app.state.services["db"].session() as session:
+            user = Message(owner="local-user", conversation_id=cid, role="user", content="恢复测试")
+            session.add(user)
+            session.flush()
+            run = Run(
+                owner="local-user",
+                conversation_id=cid,
+                request_key="abandoned",
+                user_message_id=user.id,
+                data={"text": "恢复测试"},
+            )
+            session.add(run)
+            session.flush()
+            rid = run.id
+    with TestClient(create_local_demo(path, "crash-token"), headers=headers) as client:
+        result = client.get(f"/api/v1/agent/runs/{rid}").json()
+        assert result["status"] == "FAILED"
+        assert result["error"]["code"] == "SERVER_RESTARTED"
+        assert (
+            client.get(f"/api/v1/conversations/{cid}").json()["messages"][-1]["answer"]["retryText"]
+            == "恢复测试"
+        )
