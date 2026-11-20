@@ -1,4 +1,5 @@
 node_modules/
+screenshoots/
 dist/
 .DS_Store
 *.log
@@ -32,3 +33,4 @@ github-ready/
 *.sqlite*
 /令牌.md
 !.env.example
+screenshoots/
